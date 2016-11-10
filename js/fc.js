@@ -101,9 +101,12 @@ var FC = {
         };
         
         RC_tuning = {
-            RC_RATE:         0,
-            RC_EXPO:         0,
-            roll_pitch_rate: 0, // pre 1.7 api only
+            RC_ROLL_RATE:         0,
+            RC_PITCH_RATE:         0,
+            RC_ROLL_EXPO:         0,
+            RC_PITCH_EXPO:         0,
+            RC_YAW_RATE:       0
+            RC_YAW_EXPO:     0,
             roll_rate:       0, 
             pitch_rate:      0,
             yaw_rate:        0,
@@ -111,8 +114,6 @@ var FC = {
             throttle_MID:    0,
             throttle_EXPO:   0,
             dynamic_THR_breakpoint: 0,
-            RC_YAW_EXPO:     0,
-            rcYawRate:       0
         };
         
         AUX_CONFIG = [];

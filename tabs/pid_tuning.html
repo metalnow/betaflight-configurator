@@ -91,17 +91,10 @@
                                 <td class="pid_data"><input type="number" name="p" step="1" min="0" max="255" /></td>
                                 <td class="pid_data"><input type="number" name="i" step="1" min="0" max="255" /></td>
                                 <td class="pid_data"><input type="number" name="d" step="1" min="0" max="255" /></td>
-                                <td rowspan="2" style="background-color:white;">
-                                    <input type="number" name="rc_rate" step="0.01" min="0" max="2.55" />
-                                    <div class="bracket"></div>
-                                </td>
+                                <td><input type="number" name="rc_roll_rate" step="0.01" min="0" max="2.55" /></td>
                                 <td class="roll_rate"><input type="number" name="roll_rate" step="0.01" min="0" max="1.00" /></td>
-                                <td class="roll_pitch_rate" rowspan="2"><input type="number" name="roll_pitch_rate" step="0.01" min="0" max="1.00" /></td>
                                 <td class="new_rates maxAngularVelRoll"></td>
-                                <td rowspan="2" style="background-color:white;">
-                                    <input type="number" name="rc_expo" step="0.01" min="0" max="1" />
-                                    <div class="bracket"></div>
-                                </td>
+                                <td><input type="number" name="rc_roll_expo" step="0.01" min="0" max="1" /></td>
                             </tr>
                             <tr class="PITCH">
                                 <!-- 1 -->
@@ -109,8 +102,10 @@
                                 <td class="pid_data"><input type="number" name="p" step="1" min="0" max="255" /></td>
                                 <td class="pid_data"><input type="number" name="i" step="1" min="0" max="255" /></td>
                                 <td class="pid_data"><input type="number" name="d" step="1" min="0" max="255" /></td>
+                                <td><input type="number" name="rc_pitch_rate" step="0.01" min="0" max="2.55" /></td>
                                 <td class="pitch_rate"><input type="number" name="pitch_rate" step="0.01" min="0" max="1.00" /></td>
                                 <td class="new_rates maxAngularVelPitch"></td>
+                                <td><input type="number" name="rc_pitch_expo" step="0.01" min="0" max="1" /></td>
                             </tr>
                             <tr class="YAW">
                                 <!-- 2 -->
@@ -118,7 +113,7 @@
                                 <td class="pid_data"><input type="number" name="p" step="1" min="0" max="255" /></td>
                                 <td class="pid_data"><input type="number" name="i" step="1" min="0" max="255" /></td>
                                 <td></td>
-                                <td rowspan="1"><input type="number" name="rc_rate_yaw" step="0.01" min="0" max="2.55" /></td>
+                                <td><input type="number" name="rc_yaw_rate" step="0.01" min="0" max="2.55" /></td>
                                 <td><input type="number" name="yaw_rate" step="0.01" min="0" max="2.55" /></td>
                                 <td class="new_rates maxAngularVelYaw"></td>
                                 <td><input type="number" name="rc_yaw_expo" step="0.01" min="0" max="1" /></td>

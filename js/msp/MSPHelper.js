@@ -129,36 +129,24 @@ MspHelper.prototype.process_data = function(dataHandler) {
             ANALOG.last_received_timestamp = Date.now();
             break;
         case MSPCodes.MSP_RC_TUNING:
-            RC_tuning.RC_RATE = parseFloat((data.readU8() / 100).toFixed(2));
-            RC_tuning.RC_EXPO = parseFloat((data.readU8() / 100).toFixed(2));
-            if (semver.lt(CONFIG.apiVersion, "1.7.0")) {
-                RC_tuning.roll_pitch_rate = parseFloat((data.readU8() / 100).toFixed(2));
-                RC_tuning.pitch_rate = 0;
-                RC_tuning.roll_rate = 0;
-            } else {
-                RC_tuning.roll_pitch_rate = 0;
-                RC_tuning.roll_rate = parseFloat((data.readU8() / 100).toFixed(2));
-                RC_tuning.pitch_rate = parseFloat((data.readU8() / 100).toFixed(2));
-            }
+        	
+            RC_tuning.RC_ROLL_RATE = parseFloat((data.readU8() / 100).toFixed(2));
+            RC_tuning.RC_ROLL_EXPO = parseFloat((data.readU8() / 100).toFixed(2));            
+            RC_tuning.roll_rate = parseFloat((data.readU8() / 100).toFixed(2));
+            
+            RC_tuning.RC_PITCH_RATE = parseFloat((data.readU8() / 100).toFixed(2));
+            RC_tuning.RC_PITCH_EXPO = parseFloat((data.readU8() / 100).toFixed(2));            
+            RC_tuning.pitch_rate = parseFloat((data.readU8() / 100).toFixed(2));
+                
+            RC_tuning.RC_YAW_RATE = parseFloat((data.readU8() / 100).toFixed(2));
+            RC_tuning.RC_YAW_EXPO = parseFloat((data.readU8() / 100).toFixed(2));            
             RC_tuning.yaw_rate = parseFloat((data.readU8() / 100).toFixed(2));
+            
             RC_tuning.dynamic_THR_PID = parseFloat((data.readU8() / 100).toFixed(2));
             RC_tuning.throttle_MID = parseFloat((data.readU8() / 100).toFixed(2));
             RC_tuning.throttle_EXPO = parseFloat((data.readU8() / 100).toFixed(2));
-            if (semver.gte(CONFIG.apiVersion, "1.7.0")) {
-                RC_tuning.dynamic_THR_breakpoint = data.readU16();
-            } else {
-                RC_tuning.dynamic_THR_breakpoint = 0;
-            }
-            if (semver.gte(CONFIG.apiVersion, "1.10.0")) {
-                RC_tuning.RC_YAW_EXPO = parseFloat((data.readU8() / 100).toFixed(2));
-                if (semver.gte(CONFIG.flightControllerVersion, "2.9.1")) {
-                    RC_tuning.rcYawRate = parseFloat((data.readU8() / 100).toFixed(2));
-                } else if (semver.lt(CONFIG.flightControllerVersion, "2.9.0")) {
-                    RC_tuning.rcYawRate = 0;
-                }
-            } else {
-                RC_tuning.RC_YAW_EXPO = 0;
-            }
+            RC_tuning.dynamic_THR_breakpoint = data.readU16();
+            
             break;
         case MSPCodes.MSP_PID:
             // PID data arrived, we need to scale it and save to appropriate bank / array
@@ -630,7 +618,7 @@ MspHelper.prototype.process_data = function(dataHandler) {
         case MSPCodes.MSP_SPECIAL_PARAMETERS:
             if (semver.lt(CONFIG.flightControllerVersion, "2.9.1")) {
                 if (semver.gte(CONFIG.flightControllerVersion, "2.8.0")) {
-                    RC_tuning.rcYawRate = parseFloat((data.readU8() / 100).toFixed(2));
+                    RC_tuning.RC_YAW_EXPO = parseFloat((data.readU8() / 100).toFixed(2));
                     if (semver.gte(CONFIG.flightControllerVersion, "2.8.2")) {
                         RX_CONFIG.airModeActivateThreshold = data.readU16();
                         RX_CONFIG.rcSmoothInterval = data.readU8()
@@ -945,27 +933,20 @@ MspHelper.prototype.crunch = function(code) {
             }
             break;
         case MSPCodes.MSP_SET_RC_TUNING:
-            buffer.push8(Math.round(RC_tuning.RC_RATE * 100))
-                .push8(Math.round(RC_tuning.RC_EXPO * 100));
-            if (semver.lt(CONFIG.apiVersion, "1.7.0")) {
-                buffer.push8(Math.round(RC_tuning.roll_pitch_rate * 100));
-            } else {
-                buffer.push8(Math.round(RC_tuning.roll_rate * 100))
-                    .push8(Math.round(RC_tuning.pitch_rate * 100));
-            }
-            buffer.push8(Math.round(RC_tuning.yaw_rate * 100))
-                .push8(Math.round(RC_tuning.dynamic_THR_PID * 100))
+            buffer.push8(Math.round(RC_tuning.RC_ROLL_RATE * 100))
+                .push8(Math.round(RC_tuning.RC_ROLL_EXPO * 100))
+                .push8(Math.round(RC_tuning.roll_rate * 100));
+            buffer.push8(Math.round(RC_tuning.RC_PITCH_RATE * 100))
+                .push8(Math.round(RC_tuning.RC_PITCH_EXPO * 100))
+                .push8(Math.round(RC_tuning.pitch_rate * 100));
+            buffer.push8(Math.round(RC_tuning.RC_YAW_RATE * 100))
+                .push8(Math.round(RC_tuning.RC_YAW_EXPO * 100))
+                .push8(Math.round(RC_tuning.yaw_rate * 100));
+                
+            buffer.push8(Math.round(RC_tuning.dynamic_THR_PID * 100))
                 .push8(Math.round(RC_tuning.throttle_MID * 100))
                 .push8(Math.round(RC_tuning.throttle_EXPO * 100));
-            if (semver.gte(CONFIG.apiVersion, "1.7.0")) {
-                buffer.push16(RC_tuning.dynamic_THR_breakpoint);
-            }
-            if (semver.gte(CONFIG.apiVersion, "1.10.0")) {
-                buffer.push8(Math.round(RC_tuning.RC_YAW_EXPO * 100));
-                if (semver.gte(CONFIG.flightControllerVersion, "2.9.1")) {
-                    buffer.push8(Math.round(RC_tuning.rcYawRate * 100));
-                }
-            }
+            buffer.push16(RC_tuning.dynamic_THR_breakpoint);            
             break;
         case MSPCodes.MSP_SET_RX_MAP:
             for (var i = 0; i < RC_MAP.length; i++) {
@@ -1145,7 +1126,7 @@ MspHelper.prototype.crunch = function(code) {
             break;
         case MSPCodes.MSP_SET_SPECIAL_PARAMETERS:
             if (semver.lt(CONFIG.flightControllerVersion, "2.9.1")) {
-                buffer.push8(Math.round(RC_tuning.rcYawRate * 100));
+                buffer.push8(Math.round(RC_tuning.RC_YAW_EXPO * 100));
                 if (semver.gte(CONFIG.flightControllerVersion, "2.8.2")) {
                     buffer.push16(RX_CONFIG.airModeActivateThreshold)
                         .push8(RX_CONFIG.rcSmoothInterval)

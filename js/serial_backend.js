@@ -193,7 +193,7 @@ function onOpen(openInfo) {
             if (semver.gte(CONFIG.apiVersion, CONFIGURATOR.apiVersionAccepted)) {
 
                 MSP.send_message(MSPCodes.MSP_FC_VARIANT, false, false, function () {
-                    if (CONFIG.flightControllerIdentifier === 'BTFL') {
+                    if (CONFIG.flightControllerIdentifier === 'LXFL') {
                         MSP.send_message(MSPCodes.MSP_FC_VERSION, false, false, function () {
 
                             GUI.log(chrome.i18n.getMessage('fcInfoReceived', [CONFIG.flightControllerIdentifier, CONFIG.flightControllerVersion]));

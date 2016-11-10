@@ -39,7 +39,7 @@ TABS.pid_tuning.initialize = function (callback) {
         return MSP.promise(MSPCodes.MSP_FILTER_CONFIG);
     }).then(function() {
         var promise = true;
-        if (CONFIG.flightControllerIdentifier === "BTFL" && semver.gte(CONFIG.flightControllerVersion, "2.8.0")) {
+        if (CONFIG.flightControllerIdentifier === "LXFL" && semver.gte(CONFIG.flightControllerVersion, "2.8.0")) {
             promise = MSP.promise(MSPCodes.MSP_BF_CONFIG);
         }
 
@@ -201,12 +201,14 @@ TABS.pid_tuning.initialize = function (callback) {
         });
 
         // Fill in data from RC_tuning object
-        $('.pid_tuning input[name="rc_rate"]').val(RC_tuning.RC_RATE.toFixed(2));
+        $('.pid_tuning input[name="rc_roll_rate"]').val(RC_tuning.RC_ROLL_RATE.toFixed(2));
+        $('.pid_tuning input[name="rc_pitch_rate"]').val(RC_tuning.RC_PITCH_RATE.toFixed(2));
         $('.pid_tuning input[name="roll_pitch_rate"]').val(RC_tuning.roll_pitch_rate.toFixed(2));
         $('.pid_tuning input[name="roll_rate"]').val(RC_tuning.roll_rate.toFixed(2));
         $('.pid_tuning input[name="pitch_rate"]').val(RC_tuning.pitch_rate.toFixed(2));
         $('.pid_tuning input[name="yaw_rate"]').val(RC_tuning.yaw_rate.toFixed(2));
-        $('.pid_tuning input[name="rc_expo"]').val(RC_tuning.RC_EXPO.toFixed(2));
+        $('.pid_tuning input[name="rc_roll_expo"]').val(RC_tuning.RC_ROLL_EXPO.toFixed(2));
+        $('.pid_tuning input[name="rc_pitch_expo"]').val(RC_tuning.RC_PITCH_EXPO.toFixed(2));
         $('.pid_tuning input[name="rc_yaw_expo"]').val(RC_tuning.RC_YAW_EXPO.toFixed(2));
 
         $('.throttle input[name="mid"]').val(RC_tuning.throttle_MID.toFixed(2));
@@ -229,14 +231,14 @@ TABS.pid_tuning.initialize = function (callback) {
         }
 
         if (semver.gte(CONFIG.flightControllerVersion, '2.9.0')) {
-            $('.pid_tuning input[name="rc_rate_yaw"]').val(RC_tuning.rcYawRate.toFixed(2));
+            $('.pid_tuning input[name="rc_yaw_rate"]').val(RC_tuning.RC_YAW_RATE.toFixed(2));
             $('.pid_filter input[name="gyroLowpassFrequency"]').val(FILTER_CONFIG.gyro_soft_lpf_hz);
             $('.pid_filter input[name="dtermLowpassFrequency"]').val(FILTER_CONFIG.dterm_lpf_hz);
             $('.pid_filter input[name="yawLowpassFrequency"]').val(FILTER_CONFIG.yaw_lpf_hz);
         } else {
             $('.tab-pid_tuning .subtab-filter').hide();
             $('.tab-pid_tuning .tab_container').hide();
-            $('.pid_tuning input[name="rc_rate_yaw"]').hide();
+            $('.pid_tuning input[name="rc_yaw_rate"]').hide();
         }
 
         if (semver.gte(CONFIG.flightControllerVersion, "3.0.0")
@@ -329,14 +331,16 @@ TABS.pid_tuning.initialize = function (callback) {
         });
 
         // catch RC_tuning changes
-        RC_tuning.RC_RATE = parseFloat($('.pid_tuning input[name="rc_rate"]').val());
+        RC_tuning.RC_ROLL_RATE = parseFloat($('.pid_tuning input[name="rc_roll_rate"]').val());
+        RC_tuning.RC_PITCH_RATE = parseFloat($('.pid_tuning input[name="rc_pitch_rate"]').val());
         RC_tuning.roll_pitch_rate = parseFloat($('.pid_tuning input[name="roll_pitch_rate"]').val());
         RC_tuning.roll_rate = parseFloat($('.pid_tuning input[name="roll_rate"]').val());
         RC_tuning.pitch_rate = parseFloat($('.pid_tuning input[name="pitch_rate"]').val());
         RC_tuning.yaw_rate = parseFloat($('.pid_tuning input[name="yaw_rate"]').val());
-        RC_tuning.RC_EXPO = parseFloat($('.pid_tuning input[name="rc_expo"]').val());
+        RC_tuning.RC_ROLL_EXPO = parseFloat($('.pid_tuning input[name="rc_roll_expo"]').val());
+        RC_tuning.RC_PITCH_EXPO = parseFloat($('.pid_tuning input[name="rc_pitch_expo"]').val());
         RC_tuning.RC_YAW_EXPO = parseFloat($('.pid_tuning input[name="rc_yaw_expo"]').val());
-        RC_tuning.rcYawRate = parseFloat($('.pid_tuning input[name="rc_rate_yaw"]').val());
+        RC_tuning.RC_YAW_RATE = parseFloat($('.pid_tuning input[name="rc_yaw_rate"]').val());
 
         RC_tuning.throttle_MID = parseFloat($('.throttle input[name="mid"]').val());
         RC_tuning.throttle_EXPO = parseFloat($('.throttle input[name="expo"]').val())
@@ -472,26 +476,19 @@ TABS.pid_tuning.initialize = function (callback) {
 
         // Local cache of current rates
         self.currentRates = {
-            roll_rate:   RC_tuning.roll_rate,
-            pitch_rate:  RC_tuning.pitch_rate,
-            yaw_rate:    RC_tuning.yaw_rate,
-            rc_rate:     RC_tuning.RC_RATE,
-            rc_rate_yaw: RC_tuning.rcYawRate,
-            rc_expo:     RC_tuning.RC_EXPO,
-            rc_yaw_expo: RC_tuning.RC_YAW_EXPO,
-            superexpo:   BF_CONFIG.features.isEnabled('SUPEREXPO_RATES'),
-            deadband: RC_deadband.deadband,
-            yawDeadband: RC_deadband.yaw_deadband
+            roll_rate:   	RC_tuning.roll_rate,
+            pitch_rate:  	RC_tuning.pitch_rate,
+            yaw_rate:    	RC_tuning.yaw_rate,
+            rc_roll_rate:   RC_tuning.RC_ROLL_RATE,
+            rc_pitch_rate:  RC_tuning.RC_PITCH_RATE,
+            rc_yaw_rate: 	RC_tuning.RC_YAW_RATE,
+            rc_roll_expo:   RC_tuning.RC_ROLL_EXPO,
+            rc_pitch_expo:  RC_tuning.RC_PITCH_EXPO,
+            rc_yaw_expo: 	RC_tuning.RC_YAW_EXPO,
+            superexpo:   	BF_CONFIG.features.isEnabled('SUPEREXPO_RATES'),
+            deadband: 		RC_deadband.deadband,
+            yawDeadband: 	RC_deadband.yaw_deadband
         };
-
-        if (semver.lt(CONFIG.apiVersion, "1.7.0")) {
-            self.currentRates.roll_rate = RC_tuning.roll_pitch_rate;
-            self.currentRates.pitch_rate = RC_tuning.roll_pitch_rate;
-        }
-
-        if (semver.lt(CONFIG.flightControllerVersion, "2.8.1")) {
-            self.currentRates.rc_rate_yaw = self.currentRates.rc_rate;
-        }
 
         if (semver.gte(CONFIG.flightControllerVersion, "3.0.0")) {
             self.currentRates.superexpo = true;
@@ -625,8 +622,7 @@ TABS.pid_tuning.initialize = function (callback) {
             ]
         } else if (semver.gte(CONFIG.flightControllerVersion, "3.0.0")) {
             pidControllerList = [
-                { name: "Legacy"},
-                { name: "Betaflight"},
+                { name: "Lux"}
             ]
         } else {
             pidControllerList = [
@@ -692,10 +688,6 @@ TABS.pid_tuning.initialize = function (callback) {
                         updateNeeded = true;
                     }
 
-                    if (targetElement.attr('name') === 'rc_rate' && semver.lt(CONFIG.flightControllerVersion, "2.8.1")) {
-                        self.currentRates.rc_rate_yaw = targetValue;
-                    }
-
                     if (targetElement.attr('name') === 'roll_pitch_rate' && semver.lt(CONFIG.apiVersion, "1.7.0")) {
                         self.currentRates.roll_rate = targetValue;
                         self.currentRates.pitch_rate = targetValue;
@@ -720,9 +712,9 @@ TABS.pid_tuning.initialize = function (callback) {
 
                     if (!useLegacyCurve) {
                         maxAngularVel = Math.max(
-                            printMaxAngularVel(self.currentRates.roll_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, self.maxAngularVelRollElement),
-                            printMaxAngularVel(self.currentRates.pitch_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, self.maxAngularVelPitchElement),
-                            printMaxAngularVel(self.currentRates.yaw_rate, self.currentRates.rc_rate_yaw, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, self.maxAngularVelYawElement));
+                            printMaxAngularVel(self.currentRates.roll_rate, self.currentRates.rc_roll_rate, self.currentRates.rc_roll_expo, self.currentRates.superexpo, self.currentRates.deadband, self.maxAngularVelRollElement),
+                            printMaxAngularVel(self.currentRates.pitch_rate, self.currentRates.rc_pitch_rate, self.currentRates.rc_pitch_expo, self.currentRates.superexpo, self.currentRates.deadband, self.maxAngularVelPitchElement),
+                            printMaxAngularVel(self.currentRates.yaw_rate, self.currentRates.rc_yaw_rate, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, self.maxAngularVelYawElement));
 
                         // make maxAngularVel multiple of 200deg/s so that the auto-scale doesn't keep changing for small changes of the maximum curve
                         maxAngularVel = self.rateCurve.setMaxAngularVel(maxAngularVel);
@@ -734,9 +726,9 @@ TABS.pid_tuning.initialize = function (callback) {
                     }
 
                     curveContext.lineWidth = 2 * lineScale;
-                    drawCurve(self.currentRates.roll_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, '#ff0000', 0, curveContext);
-                    drawCurve(self.currentRates.pitch_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, '#00ff00', -4, curveContext);
-                    drawCurve(self.currentRates.yaw_rate, self.currentRates.rc_rate_yaw, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, maxAngularVel, '#0000ff', 4, curveContext);
+                    drawCurve(self.currentRates.roll_rate, self.currentRates.rc_roll_rate, self.currentRates.rc_roll_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, '#ff0000', 0, curveContext);
+                    drawCurve(self.currentRates.pitch_rate, self.currentRates.rc_pitch_rate, self.currentRates.rc_pitch_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, '#00ff00', -4, curveContext);
+                    drawCurve(self.currentRates.yaw_rate, self.currentRates.rc_yaw_rate, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, maxAngularVel, '#0000ff', 4, curveContext);
 
                     self.updateRatesLabels();
 
@@ -901,9 +893,9 @@ TABS.pid_tuning.renderModel = function () {
     if (RC.channels[0] && RC.channels[1] && RC.channels[2]) {
         var delta = this.clock.getDelta();
 
-        var roll  = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[0], this.currentRates.roll_rate,  this.currentRates.rc_rate,     this.currentRates.rc_expo,     this.currentRates.superexpo, this.currentRates.deadband),
-            pitch = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[1], this.currentRates.pitch_rate, this.currentRates.rc_rate,     this.currentRates.rc_expo,     this.currentRates.superexpo, this.currentRates.deadband),
-            yaw   = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[2], this.currentRates.yaw_rate,   this.currentRates.rc_rate_yaw, this.currentRates.rc_yaw_expo, this.currentRates.superexpo, this.currentRates.yawDeadband);
+        var roll  = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[0], this.currentRates.roll_rate,  this.currentRates.rc_roll_rate,     this.currentRates.rc_roll_expo,     this.currentRates.superexpo, this.currentRates.deadband),
+            pitch = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[1], this.currentRates.pitch_rate, this.currentRates.rc_pitch_rate,     this.currentRates.rc_pitch_expo,     this.currentRates.superexpo, this.currentRates.deadband),
+            yaw   = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(RC.channels[2], this.currentRates.yaw_rate,   this.currentRates.rc_yaw_rate, this.currentRates.rc_yaw_expo, this.currentRates.superexpo, this.currentRates.yawDeadband);
 
         this.model.rotateBy(-degToRad(pitch), -degToRad(yaw), -degToRad(roll));
 
@@ -1183,9 +1175,9 @@ TABS.pid_tuning.updateRatesLabels = function() {
         }
 
         if(RC.channels[0] && RC.channels[1] && RC.channels[2]) {
-            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[0], self.currentRates.roll_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, stickContext, '#FF8080') + ' deg/s');
-            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[1], self.currentRates.roll_rate, self.currentRates.rc_rate, self.currentRates.rc_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, stickContext, '#80FF80') + ' deg/s');
-            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[2], self.currentRates.yaw_rate, self.currentRates.rc_rate_yaw, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, maxAngularVel, stickContext, '#8080FF') + ' deg/s');
+            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[0], self.currentRates.roll_rate, self.currentRates.rc_roll_rate, self.currentRates.rc_roll_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, stickContext, '#FF8080') + ' deg/s');
+            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[1], self.currentRates.roll_rate, self.currentRates.rc_pitch_rate, self.currentRates.rc_pitch_expo, self.currentRates.superexpo, self.currentRates.deadband, maxAngularVel, stickContext, '#80FF80') + ' deg/s');
+            currentValues.push(self.rateCurve.drawStickPosition(RC.channels[2], self.currentRates.yaw_rate, self.currentRates.rc_yaw_rate, self.currentRates.rc_yaw_expo, self.currentRates.superexpo, self.currentRates.yawDeadband, maxAngularVel, stickContext, '#8080FF') + ' deg/s');
         } else {
             currentValues = [];
         }
